@@ -18,6 +18,9 @@ else(APPLE)
 
 	include_directories(${CMAKE_SOURCE_DIR}/include/)
 
+	#TODO: change the target architecture to the 128
+	set(COMPILE_FLAGS "-g -O0 -mmcu=atmega8")
+
 	file(GLOB SCREEN 
 		${CMAKE_SOURCE_DIR}/src/screen/main.cpp)
 
@@ -34,13 +37,20 @@ else(APPLE)
 		${CMAKE_SOURCE_DIR}/src/core/wiring_pulse.c
 		)
 
-	# This will probably not be an exectuable
-
 	add_library(arduinocore STATIC ${ARDUINOCORE})
-
 	add_executable(screen ${SCREEN})
-	
 	target_link_libraries(screen arduinocore)
+
+	#convert the elf file to hex
+
+	add_custom_command(
+		OUTPUT screen.hex
+		DEPENDS screen
+
+		COMMAND avr-objcopy -O ihex -R .eeprom ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/screen ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/screen.hex
+		)
+ 
+	add_custom_target(run ALL DEPENDS screen.hex)
 
 endif(APPLE)
 
