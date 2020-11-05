@@ -13,10 +13,18 @@ else(APPLE)
 
 	set(CMAKE_SYSTEM_NAME Generic)
 
+if(LINUX)
 	set(CMAKE_C_COMPILER /usr/bin/avr-gcc)
 	set(CMAKE_CXX_COMPILER /usr/bin/avr-g++)
+else(LINUX)
+	
+	set(CMAKE_C_COMPILER C:/WinAVR-20100110/bin/avr-gcc.exe)
+	set(CMAKE_CXX_COMPILER C:/WinAVR-20100110/bin/avr-g++.exe)
+	message(STATUS "Setting Windows compilers")
 
-	set(COMPILE_FLAGS "-std=c++14 -gstabs -funsigned-char -funsigned-bitfields -fpack-struct -fshort-enums -O0 -mmcu=atmega2560 -DF_CPU=16000000")
+endif(LINUX)
+
+	set(COMPILE_FLAGS "-gstabs -funsigned-char -funsigned-bitfields -fpack-struct -fshort-enums -O0 -mmcu=atmega2560 -DF_CPU=16000000")
 
 	set(CMAKE_C_FLAGS ${COMPILE_FLAGS})
 	set(CMAKE_CXX_FLAGS ${COMPILE_FLAGS})
