@@ -16,15 +16,12 @@ else(APPLE)
 	set(CMAKE_C_COMPILER /usr/bin/avr-gcc)
 	set(CMAKE_CXX_COMPILER /usr/bin/avr-g++)
 
-	set(COMPILE_FLAGS "-gstabs -funsigned-char -funsigned-bitfields -fpack-struct -fshort-enums -O0 -mmcu=atmega2560 -DF_CPU=16000000")
+	set(COMPILE_FLAGS "-std=c++14 -gstabs -funsigned-char -funsigned-bitfields -fpack-struct -fshort-enums -O0 -mmcu=atmega2560 -DF_CPU=16000000")
 
 	set(CMAKE_C_FLAGS ${COMPILE_FLAGS})
 	set(CMAKE_CXX_FLAGS ${COMPILE_FLAGS})
 
 	include_directories(${CMAKE_SOURCE_DIR}/include/)
-
-	#TODO: change the target architecture to the 128
-	set(COMPILE_FLAGS "-g -O0 -mmcu=atmega8")
 
 	file(GLOB SCREEN 
 		${CMAKE_SOURCE_DIR}/src/screen/main.cpp)
