@@ -2,8 +2,6 @@
 cmake_minimum_required(VERSION 3.9)
 project(RAD)
 
-include(${CMAKE_SOURCE_DIR}/cmake/arduino_diecimila_crosscompile.cmake)
-
 #Output directory variables
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/lib)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/lib)
@@ -13,8 +11,15 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
 if (APPLE)
 else(APPLE)
 
+	set(CMAKE_SYSTEM_NAME Generic)
+
 	set(CMAKE_C_COMPILER /usr/bin/avr-gcc)
 	set(CMAKE_CXX_COMPILER /usr/bin/avr-g++)
+
+	set(COMPILE_FLAGS "-gstabs -funsigned-char -funsigned-bitfields -fpack-struct -fshort-enums -O0 -mmcu=atmega2560 -DF_CPU=16000000")
+
+	set(CMAKE_C_FLAGS ${COMPILE_FLAGS})
+	set(CMAKE_CXX_FLAGS ${COMPILE_FLAGS})
 
 	include_directories(${CMAKE_SOURCE_DIR}/include/)
 
