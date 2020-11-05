@@ -2,6 +2,17 @@
 #include "ttype.h"
 
 #define LED_BUILTIN 13
+#define MIN_DELAY 2
+
+//A pixel is to a stepper
+struct Pixel{
+	u32 delay = MIN_DELAY; 
+	//TODO: compact this
+	u32 pin;
+	u32 state = 1;
+	u32 dir; 
+};
+
 
 constexpr u8 ReverseBitOrder(u8 b){ // performs simple bit swapping
 	b = (b & 0xF0) >> 4 | (b & 0x0F) << 4;
@@ -22,13 +33,21 @@ enum StepperState : u8{
 };
 
 void WriteStep(u32 start_pin,StepperState step){
-	digitalWrite(start_pin, (step) ^ 1);
-	digitalWrite(start_pin + 1,(step >> 1) ^ 1);
-	digitalWrite(start_pin + 2,(step >> 2) ^ 1);
-	digitalWrite(start_pin + 3,(step >> 3) ^ 1);
+	digitalWrite(start_pin, (step) & 1);
+	digitalWrite(start_pin + 1,(step >> 1) & 1);
+	digitalWrite(start_pin + 2,(step >> 2) & 1);
+	digitalWrite(start_pin + 3,(step >> 3) & 1);
 }
 
-void WriteToScreen(u8* buffer,u32 len){
+
+void UpdatePixel(_restrict Pixel* pixel){
+	pixel->state <<= pixel->dir;
+	pixel->state = (pixel-state >> 1) | (pixel->state); // cycles the bit back if we overflow
+
+	WriteStep(pixel->pin,pixel->state);
+}
+
+void WriteToScreen(pixel* buffer,u32 len){
 
 	u32 start_pin = 0;
 
@@ -36,8 +55,8 @@ void WriteToScreen(u8* buffer,u32 len){
 	for(u32 y = 0; y < len; y++){
 		for(u32 x = 0; x < len; x++){
 			//NOTE: Assumes a certain matrix setup
-			WriteStep(start_pin,(StepperState)buffer[ (y * len) + x]); 
-			start_pin += 4;
+			Pixel* p = buffer + (y * len) + x;
+			UpdatePixel(p);
 		}
 	}
 }
@@ -54,16 +73,17 @@ extern "C" void __cxa_pure_virtual(void)
 
 void Startup(){
 
+
 	for(u32 i = 0; i < 53; i+=4){
 		pinMode(i + 0,OUTPUT);
 		pinMode(i + 1,OUTPUT);
 		pinMode(i + 2,OUTPUT);
 		pinMode(i + 3,OUTPUT);
 	}
+
 }
 
 void Loop(){
-	//		Serial.println("Hello world");
 }
 
 
