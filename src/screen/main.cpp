@@ -1,4 +1,4 @@
-#include "WProgram.h"
+#include "Arduino.h"
 #include "ttype.h"
 
 #define LED_BUILTIN 13
@@ -21,18 +21,7 @@ constexpr u8 ReverseBitOrder(u8 b){ // performs simple bit swapping
 	return b;
 }
 
-enum StepperState : u8{
-	STEPPER_NONE = 0,
-	STEPPER_L1 = 1,
-	STEPPER_L2 = 2,
-	STEPPER_L3 = 4,
-
-	STEPPER_R1 = ReverseBitOrder(STEPPER_L1),
-	STEPPER_R2 = ReverseBitOrder(STEPPER_L2),
-	STEPPER_R3 = ReverseBitOrder(STEPPER_L3),
-};
-
-void WriteStep(u32 start_pin,StepperState step){
+void WriteStep(u32 start_pin,u32 step){
 	digitalWrite(start_pin, (step) & 1);
 	digitalWrite(start_pin + 1,(step >> 1) & 1);
 	digitalWrite(start_pin + 2,(step >> 2) & 1);
@@ -40,14 +29,14 @@ void WriteStep(u32 start_pin,StepperState step){
 }
 
 
-void UpdatePixel(_restrict Pixel* pixel){
+void UpdatePixel(Pixel* pixel){
 	pixel->state <<= pixel->dir;
-	pixel->state = (pixel-state >> 1) | (pixel->state); // cycles the bit back if we overflow
+	pixel->state = (pixel->state >> 1) | (pixel->state); // cycles the bit back if we overflow
 
 	WriteStep(pixel->pin,pixel->state);
 }
 
-void WriteToScreen(pixel* buffer,u32 len){
+void WriteToScreen(Pixel* buffer,u32 len){
 
 	u32 start_pin = 0;
 
@@ -84,6 +73,8 @@ void Startup(){
 }
 
 void Loop(){
+	digitalWrite(13,HIGH);
+	//digitalWrite(5,HIGH);
 }
 
 
@@ -92,7 +83,7 @@ void Loop(){
 s32 main(s32 argc,s8** argv){
 
 	init();
-	Serial.begin(9600);
+	//Serial.begin(9600);
 
 	Startup();
 
